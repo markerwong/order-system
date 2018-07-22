@@ -4,19 +4,23 @@
   "description": "Three endpoints to list/place/take orders",
   "main": "app.js",
   "scripts": {
-    "lint": "eslint src/*.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src/**  test/**",
+    "test:unit": "mocha test/unit/**"
   },
   "author": "Marker Wong",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
     "config": "^1.30.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "mongodb": "^3.1.1"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
-    "eslint-plugin-import": "^2.13.0"
+    "eslint-plugin-import": "^2.13.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.1.4"
   }
 }

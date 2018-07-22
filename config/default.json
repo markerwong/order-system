@@ -1,3 +1,10 @@
 {
-  "port": 8080
+  "port": 8080,
+  "database": {
+    "mongodb": {
+      "host": "localhost",
+      "port": 27017,
+      "dbName": "order-system"
+    }
+  }
 }
