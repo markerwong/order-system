@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const database = require('./models/mongodb');
 const { placeOrder } = require('./controllers/placeOrder');
+const { takeOrder } = require('./controllers/takeOrder');
 
 
 const app = express();
@@ -17,6 +18,15 @@ const startServer = async () => {
       databaseClient,
       origin,
       destination,
+    );
+    res.status(status).send(body);
+  });
+
+  app.put('/order/:id', async (req, res) => {
+    const { params: { id } } = req;
+    const { status, body } = await takeOrder(
+      databaseClient,
+      id,
     );
     res.status(status).send(body);
   });
