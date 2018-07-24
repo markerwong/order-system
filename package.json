@@ -4,7 +4,7 @@
   "description": "Three endpoints to list/place/take orders",
   "main": "app.js",
   "scripts": {
-    "lint": "eslint src/**  test/**",
+    "lint": "eslint src/**/*.js test/**/*.js",
     "test:unit": "mocha test/unit/**"
   },
   "author": "Marker Wong",

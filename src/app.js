@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const database = require('./models/mongodb');
 const { placeOrder } = require('./controllers/placeOrder');
 const { takeOrder } = require('./controllers/takeOrder');
+const { getOrders } = require('./controllers/getOrders');
 
 
 const app = express();
@@ -27,6 +28,16 @@ const startServer = async () => {
     const { status, body } = await takeOrder(
       databaseClient,
       id,
+    );
+    res.status(status).send(body);
+  });
+
+  app.get('/order', async (req, res) => {
+    const { query: { page, limit } } = req;
+    const { status, body } = await getOrders(
+      databaseClient,
+      Number(page),
+      Number(limit),
     );
     res.status(status).send(body);
   });
