@@ -44,7 +44,7 @@ describe('models/mongodb', () => {
         distance: 5,
         status: 0,
       };
-      const insertFunction = client.collection('order').insert;
+      const insertFunction = client.collection().insert;
 
       await mongodb.placeOrder(client, data);
 
@@ -65,16 +65,62 @@ describe('models/mongodb', () => {
       };
       const client = {
         collection: sandbox.stub().returns({
-          find: sandbox.stub().returns(order),
+          find: sandbox.stub().returns({
+            toArray: sandbox.stub().returns([order]),
+          }),
         }),
       };
-      const getFunction = client.collection('order').find;
+      const findFunction = client.collection().find;
 
       const result = await mongodb.getOrder(client, id);
 
       expect(result).to.deep.equal(order);
-      expect(getFunction.calledOnce).to.be.true;
-      expect(getFunction.args[0][0]).to.deep.equal({ id });
+      expect(findFunction.calledOnce).to.be.true;
+      expect(findFunction.args[0][0]).to.deep.equal({ id });
+    });
+  });
+
+  describe('getOrders', () => {
+    it('should get order list', async () => {
+      const page = 10;
+      const limit = 2;
+      const orders = [{
+        id: 1,
+        origin: [1, 2],
+        destination: [3, 4],
+        distance: 5,
+        status: 0,
+      }, {
+        id: 2,
+        origin: [1, 2],
+        destination: [3, 4],
+        distance: 5,
+        status: 0,
+      }];
+      const client = {
+        collection: sandbox.stub().returns({
+          find: sandbox.stub().returns({
+            sort: sandbox.stub().returns({
+              skip: sandbox.stub().returns({
+                limit: sandbox.stub().returns({
+                  toArray: sandbox.stub().returns(orders),
+                }),
+              }),
+            }),
+          }),
+        }),
+      };
+      const skip = (page - 1) * limit;
+      const findFunction = client.collection().find;
+      const skipFunction = findFunction().sort().skip;
+      const limitFunction = skipFunction().limit;
+
+      const result = await mongodb.getOrders(client, page, limit);
+
+      expect(result).to.deep.equal(orders);
+      expect(limitFunction.calledOnce).to.be.true;
+      expect(skipFunction.args[1][0]).to.equal(skip);
+      expect(limitFunction.args[0][0]).to.equal(limit);
     });
   });
 
@@ -86,7 +132,7 @@ describe('models/mongodb', () => {
           update: sandbox.stub(),
         }),
       };
-      const updateFunction = client.collection('order').update;
+      const updateFunction = client.collection().update;
 
       await mongodb.takeOrder(client, id);
 

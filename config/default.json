@@ -6,5 +6,8 @@
       "port": 27017,
       "dbName": "order-system"
     }
+  },
+  "maps": {
+    "key": "AIzaSyCO1PJeJlPQ_hb19E1xzJhw0ImyoNtT7NQ"
   }
 }

@@ -1,34 +1,9 @@
 const { MongoClient } = require('mongodb');
 const config = require('config');
 
-async function get(client, collection, query) {
-  const collectionItem = client.collection(collection);
-  try {
-    return await collectionItem.find(query);
-  } catch (ex) {
-    console.error(ex.message);
-    throw ex;
-  }
-}
 
-async function insert(client, collection, doc) {
-  const collectionItem = client.collection(collection);
-  try {
-    return await collectionItem.insert(doc);
-  } catch (ex) {
-    console.error(ex.message);
-    throw ex;
-  }
-}
-
-async function update(client, collection, query, value) {
-  const collectionItem = client.collection(collection);
-  try {
-    return await collectionItem.update(query, { $set: value });
-  } catch (ex) {
-    console.error(ex.message);
-    throw ex;
-  }
+function getCollectionItem(client, collection) {
+  return client.collection(collection);
 }
 
 exports.connect = async () => {
@@ -44,14 +19,52 @@ exports.connect = async () => {
 };
 
 exports.placeOrder = async (client, data) => {
-  await insert(client, 'order', data);
+  const collectionItem = getCollectionItem(client, 'order');
+  try {
+    return await collectionItem.insert(data);
+  } catch (ex) {
+    console.error(ex.message);
+    throw ex;
+  }
 };
 
 exports.getOrder = async (client, id) => {
-  const order = await get(client, 'order', { id });
-  return order;
+  const collectionItem = getCollectionItem(client, 'order');
+  try {
+    const order = await collectionItem.find({ id }).toArray();
+    return (order[0]) ? order[0] : {};
+  } catch (ex) {
+    console.error(ex.message);
+    throw ex;
+  }
+};
+
+exports.getOrders = async (client, page = 1, limit = 10) => {
+  const collectionItem = getCollectionItem(client, 'order');
+  const skip = (page - 1) * limit;
+  try {
+    const orders = await collectionItem
+      .find()
+      .sort({ createTime: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+    return orders;
+  } catch (ex) {
+    console.error(ex.message);
+    throw ex;
+  }
 };
 
 exports.takeOrder = async (client, id) => {
-  await update(client, 'order', { id }, { status: 1 });
+  const collectionItem = getCollectionItem(client, 'order');
+  try {
+    return await collectionItem.update(
+      { id },
+      { $set: { status: 1 } },
+    );
+  } catch (ex) {
+    console.error(ex.message);
+    throw ex;
+  }
 };
