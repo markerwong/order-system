@@ -6,7 +6,7 @@ const { placeOrder } = require('../../../src/controllers/placeOrder');
 const database = require('../../../src/models/mongodb');
 
 
-describe('controllers/placeOrder', () => {
+describe.only('controllers/placeOrder', () => {
   const sandbox = sinon.createSandbox();
 
   afterEach(() => {
@@ -14,7 +14,7 @@ describe('controllers/placeOrder', () => {
   });
 
   describe('placeOrder', async () => {
-    it('should get correct status and body from function', async () => {
+    it('should get order id if input is valid', async () => {
       const client = sandbox.stub();
       const origin = [1, 2];
       const destination = [3, 4];
@@ -35,7 +35,12 @@ describe('controllers/placeOrder', () => {
         }),
       });
 
-      await placeOrder(client, origin, destination);
+      const { status, body } = await placeOrder(client, origin, destination);
+
+      expect(status).to.equal(200);
+      expect(body.id).to.not.null;
+      expect(body.distance).to.not.null;
+      expect(body.status).to.equal('UNASSIGN');
 
       const insertedData = database.placeOrder.args[0][1];
 
