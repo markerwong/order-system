@@ -6,7 +6,7 @@ const { placeOrder } = require('../../../src/controllers/placeOrder');
 const database = require('../../../src/models/mongodb');
 
 
-describe.only('controllers/placeOrder', () => {
+describe('controllers/placeOrder', () => {
   const sandbox = sinon.createSandbox();
 
   afterEach(() => {
