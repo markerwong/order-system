@@ -24,6 +24,11 @@ const startServer = async () => {
   });
 
   app.put('/order/:id', async (req, res) => {
+    const { status: requestStatus } = req.body;
+    if (!(requestStatus) || requestStatus !== 'taken') {
+      return res.status(400).send({ error: 'INPUT_NOT_VALID' });
+    }
+
     const { params: { id } } = req;
     const { status, body } = await takeOrder(
       databaseClient,

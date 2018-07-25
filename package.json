@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index",
     "lint": "eslint src/**/*.js test/**/*.js",
-    "test:unit": "mocha test/unit/**"
+    "test:unit": "mocha test/unit/**",
+    "test:e2e": "newman run test/e2e/api_test.json"
   },
   "author": "Marker Wong",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "mocha": "^5.2.0",
+    "newman": "^3.10.0",
     "sinon": "^6.1.4"
   }
 }
