@@ -43,5 +43,21 @@ describe('controllers/getOrders', () => {
       expect(getOrdersData.args[0][1]).to.equal(page);
       expect(getOrdersData.args[0][2]).to.equal(limit);
     });
+
+    it('should get 400 if invalid page input', async () => {
+      const client = sandbox.stub();
+      const { status, body } = await getOrders(client, 'a', 10);
+
+      expect(status).to.equal(400);
+      expect(body.error).to.equal('INPUT_NOT_VALID');
+    });
+
+    it('should get 400 if invalid limit input', async () => {
+      const client = sandbox.stub();
+      const { status, body } = await getOrders(client, 1, 'a');
+
+      expect(status).to.equal(400);
+      expect(body.error).to.equal('INPUT_NOT_VALID');
+    });
   });
 });

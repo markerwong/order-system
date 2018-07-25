@@ -37,5 +37,48 @@ describe('controllers/placeOrder', () => {
       expect(takeOrderData.args[0][0]).to.equal(client);
       expect(takeOrderData.args[0][1]).to.equal(id);
     });
+
+    it('should get 404 if order not found', async () => {
+      const client = sandbox.stub();
+      const id = 'test-id';
+      sandbox.stub(database, 'getOrder').returns({});
+      sandbox.stub(database, 'takeOrder');
+
+      const { status, body } = await takeOrder(client, id);
+
+      expect(status).to.equal(404);
+      expect(body.error).to.equal('NOT_FOUND');
+
+      const getOrderData = database.getOrder;
+      expect(getOrderData.calledOnce).to.be.true;
+      expect(getOrderData.args[0][0]).to.equal(client);
+      expect(getOrderData.args[0][1]).to.equal(id);
+
+      const takeOrderData = database.takeOrder;
+      expect(takeOrderData.calledOnce).to.be.false;
+    });
+
+    it('should get 409 if order taken by others', async () => {
+      const client = sandbox.stub();
+      const id = 'test-id';
+      sandbox.stub(database, 'getOrder').returns({
+        id,
+        status: 1,
+      });
+      sandbox.stub(database, 'takeOrder');
+
+      const { status, body } = await takeOrder(client, id);
+
+      expect(status).to.equal(409);
+      expect(body.error).to.equal('ORDER_ALREADY_BEEN_TAKEN');
+
+      const getOrderData = database.getOrder;
+      expect(getOrderData.calledOnce).to.be.true;
+      expect(getOrderData.args[0][0]).to.equal(client);
+      expect(getOrderData.args[0][1]).to.equal(id);
+
+      const takeOrderData = database.takeOrder;
+      expect(takeOrderData.calledOnce).to.be.false;
+    });
   });
 });
