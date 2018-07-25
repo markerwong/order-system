@@ -7,6 +7,7 @@ const database = require('../../../src/models/mongodb');
 
 describe('controllers/getOrders', () => {
   const sandbox = sinon.createSandbox();
+  const errorMsg = 'Connection problem';
 
   afterEach(() => {
     sandbox.restore();
@@ -36,6 +37,24 @@ describe('controllers/getOrders', () => {
 
       expect(status).to.equal(200);
       expect(body).to.deep.equal(orders);
+
+      const getOrdersData = database.getOrders;
+      expect(getOrdersData.calledOnce).to.be.true;
+      expect(getOrdersData.args[0][0]).to.equal(client);
+      expect(getOrdersData.args[0][1]).to.equal(page);
+      expect(getOrdersData.args[0][2]).to.equal(limit);
+    });
+
+    it('should get 503 if error occur on model functions', async () => {
+      const client = sandbox.stub();
+      const page = 1;
+      const limit = 10;
+      sandbox.stub(database, 'getOrders').throws(new Error(errorMsg));
+
+      const { status, body } = await getOrders(client, page, limit);
+
+      expect(status).to.equal(503);
+      expect(body.error).to.deep.equal('SERVICE_UNAVAILABLE');
 
       const getOrdersData = database.getOrders;
       expect(getOrdersData.calledOnce).to.be.true;
